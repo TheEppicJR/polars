@@ -171,6 +171,7 @@ pub fn infer_file_schema(
     // we take &mut because we maybe need to skip more rows dependent
     // on the schema inference
     skip_rows: &mut usize,
+    skip_rows_after_header: &usize,
     comment_char: Option<u8>,
     quote_char: Option<u8>,
     eol_char: u8,
@@ -269,6 +270,7 @@ pub fn infer_file_schema(
             has_header,
             schema_overwrite,
             skip_rows,
+            skip_rows_after_header,
             comment_char,
             quote_char,
             eol_char,
@@ -280,7 +282,7 @@ pub fn infer_file_schema(
     };
     if !has_header {
         // re-init lines so that the header is included in type inference.
-        lines = SplitLines::new(bytes, eol_char).skip(*skip_rows);
+        lines = SplitLines::new(bytes, eol_char).skip(*skip_rows + *skip_rows_after_header);
     }
 
     let header_length = headers.len();
@@ -423,6 +425,7 @@ pub fn infer_file_schema(
             has_header,
             schema_overwrite,
             skip_rows,
+            skip_rows_after_header,
             comment_char,
             quote_char,
             eol_char,
